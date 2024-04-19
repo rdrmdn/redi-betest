@@ -26,10 +26,7 @@ export class UserService {
     public async findOne(id: string) {
         const userCache = await this._userCacheRepo.findOne(id);
         if (userCache) {
-            return {
-                ...populateCoreUserDTO(userCache),
-                redis: true,
-            };
+            return populateCoreUserDTO(userCache);
         }
 
         const user = await this._userRepo.findOne(id);

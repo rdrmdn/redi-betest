@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { NotFoundError, UnauthorizedError } from "./utils/errors";
+import { NotFoundError, UnauthorizedError, UnprocessableError } from "./utils/errors";
 import { validateJwtToken } from "./utils/jwt";
 
 export function authorizationMiddleware(req: Request, res: Response, next: NextFunction) {
@@ -28,6 +28,15 @@ export async function errorHandler(err: Error, req: Request, res: Response, _nex
         return res;
     } else if (err instanceof NotFoundError) {
         res.status(404);
+        res.json({
+            status: "ERROR",
+            message: err.message,
+            data: null,
+        });
+
+        return res;
+    } else if (err instanceof UnprocessableError) {
+        res.status(422);
         res.json({
             status: "ERROR",
             message: err.message,

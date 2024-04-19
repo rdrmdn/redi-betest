@@ -13,3 +13,14 @@ export class NotFoundError extends Error {
       this.name = "NotFoundError";
     }
   }
+
+  export class UnprocessableError extends Error {
+    public data?: unknown;
+    constructor(message?: string, data?: unknown) {
+      const overridenMessage: string = message || "Unprocessable entity";
+      super(overridenMessage);
+  
+      this.data = data;
+      this.name = "UnprocessableError";
+    }
+  }

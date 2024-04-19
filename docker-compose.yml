@@ -1,12 +1,5 @@
 version: '1'
 services:
-  web: 
-    build: .
-    ports: 
-      - "${PORT}:${PORT}"
-    depends_on:
-      - mongo
-      - redis
   mongo:
     image: mongo
     ports:
@@ -15,3 +8,12 @@ services:
     image: 'redis:alpine'
     ports:
       - '6379:6379'
+  web: 
+    build: .
+    ports: 
+      - "${PORT}:${PORT}"
+    command: bash -c "node dist/src/migrations/setup_mongodb_collection.js && npm run test && node dist/index.js"
+    depends_on:
+      - mongo
+      - redis
+  

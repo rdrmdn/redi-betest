@@ -2,6 +2,7 @@ import { MongoClient } from "mongodb";
 import { IUserRepository } from "./iuser_repository";
 import { User } from "../core/user";
 import { CoreUserDTO, populateCoreUserDTO } from "../core/core_user_dto";
+import { UnprocessableError } from "../../../utils/errors";
 
 export class UserRepositoryMongodb implements IUserRepository {
     private _client: MongoClient;
@@ -13,7 +14,7 @@ export class UserRepositoryMongodb implements IUserRepository {
     public async find(): Promise<User[]> {
         const db = this._client.db(process.env.MONGODB_DATABASE);
         const collection = db.collection(process.env.MONGODB_USER_COLLECTION as string);
-    
+
         const userDTOs = await collection.find<CoreUserDTO>({}).toArray();
     
         return userDTOs.map((userDTO) => new User(userDTO))
@@ -37,12 +38,22 @@ export class UserRepositoryMongodb implements IUserRepository {
         const collection = db.collection(process.env.MONGODB_USER_COLLECTION as string);
 
         const doc: CoreUserDTO = populateCoreUserDTO(user);
-        const result = await collection.insertOne(doc);
 
-        if (result && result.insertedId) {
-            return user;
+        try {
+            const result = await collection.insertOne(doc);
+
+            if (result && result.insertedId) {
+                return user;
+            }
+        } catch (err: unknown) {
+            const error = err as Error;
+            if (error?.message?.includes('duplicate')) {
+                throw new UnprocessableError(error.message)
+            }
+
+            throw error;
         }
-
+        
         return undefined;
     }
 
@@ -56,12 +67,21 @@ export class UserRepositoryMongodb implements IUserRepository {
             $set: { ...doc }
         };
 
-        const result = await collection.updateOne(filter, updateDoc);
+        try {
+            const result = await collection.updateOne(filter, updateDoc);
 
-        if (result && result.modifiedCount) {
-            return user;
+            if (result && result.modifiedCount) {
+                return user;
+            }
+        } catch (err: unknown) {
+            const error = err as Error;
+            if (error?.message?.includes('duplicate')) {
+                throw new UnprocessableError(error.message)
+            }
+
+            throw error;
         }
-
+        
         return undefined;
     }
 

@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import path from "path"
+
 import { Server } from "@overnightjs/core";
 import { MongoClient } from "mongodb";
 import express from "express";
@@ -23,6 +25,18 @@ class AppServer extends Server {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
 
+        this.app.get('/test-reports', function(req, res) {
+            res.sendFile(path.join(__dirname, '../test-nice-report/main.html'));
+        });
+
+        this.app.get('/jest-html-reporters-attach/main/index.js', function(req, res) {
+            res.sendFile(path.join(__dirname, '../test-nice-report/jest-html-reporters-attach/main/index.js'));
+        });
+
+        this.app.get('/jest-html-reporters-attach/main/result.js', function(req, res) {
+            res.sendFile(path.join(__dirname, '../test-nice-report/jest-html-reporters-attach/main/result.js'));
+        });
+
         super.addControllers([
             new AuthController(),
             new UserController(
@@ -37,6 +51,7 @@ class AppServer extends Server {
     public run(port: string): void {
         this.app.listen(port, () => {
             console.info(`⚡️[server]: Service is running at http://localhost:${port}`);
+            console.info(`⚡️[server]: Test report is running at http://localhost:${port}/test-reports`);
         });
     }
 }

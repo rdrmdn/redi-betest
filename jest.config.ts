@@ -8,13 +8,11 @@ const config: JestConfigWithTsJest = {
     "<rootDir>/node_modules/",
     "<rootDir>/dist/",
     "<rootDir>/swagger/",
-    "<rootDir>/src/vendors/"
   ],
   coveragePathIgnorePatterns: [
     "<rootDir>/node_modules/",
     "<rootDir>/dist/",
     "<rootDir>/swagger/",
-    "<rootDir>/src/vendors/"
   ],
   testTimeout: 70000,
   reporters: [
