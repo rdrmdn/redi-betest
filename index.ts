@@ -58,6 +58,7 @@ class AppServer extends Server {
     public run(port: string): void {
         this.app.listen(port, () => {
             console.info(`⚡️[server]: Service is running at http://localhost:${port}`);
+            console.info(`⚡️[server]: Api Docs is running at http://localhost:${port}/api-docs`);
             console.info(`⚡️[server]: Test report is running at http://localhost:${port}/test-reports`);
         });
     }
