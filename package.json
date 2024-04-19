@@ -1,0 +1,31 @@
+{
+  "name": "ms-redi-betest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "watch": "concurrently \"npx tsc --watch\" \"nodemon -q ./dist/index.js\"",
+    "start:dev": "npm run build && npm run watch",
+    "start": "node dist/index.js",
+    "test": "npx jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "jest": "^29.7.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@overnightjs/core": "^1.7.6",
+    "@types/jsonwebtoken": "^9.0.6",
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "ksuid": "^3.0.0",
+    "mongodb": "^6.5.0"
+  }
+}
