@@ -15,7 +15,7 @@ void (async () => {
         
         if (!hasIndex) throw new Error();
     } catch (error) {
-        console.info('Creating index');
+        console.info('[Setup] Creating index');
 
         await collection.createIndex('id', { unique: true });
         await collection.createIndex('accountNumber', { unique: true });

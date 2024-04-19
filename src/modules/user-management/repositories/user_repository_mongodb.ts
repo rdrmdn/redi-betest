@@ -33,6 +33,32 @@ export class UserRepositoryMongodb implements IUserRepository {
         return undefined;
     }
 
+    public async findByAccountNumber(accountNumber: string): Promise<User | undefined> {
+        const db = this._client.db(process.env.MONGODB_DATABASE);
+        const collection = db.collection(process.env.MONGODB_USER_COLLECTION as string);
+    
+        const userDTO = await collection.findOne<CoreUserDTO>({ accountNumber });
+    
+        if (userDTO) {
+            return new User(userDTO);
+        }
+
+        return undefined;
+    }
+
+    public async findByIdentityNumber(identityNumber: string): Promise<User | undefined> {
+        const db = this._client.db(process.env.MONGODB_DATABASE);
+        const collection = db.collection(process.env.MONGODB_USER_COLLECTION as string);
+    
+        const userDTO = await collection.findOne<CoreUserDTO>({ identityNumber });
+    
+        if (userDTO) {
+            return new User(userDTO);
+        }
+
+        return undefined;
+    }
+
     public async insert(user: User): Promise<User | undefined> {
         const db = this._client.db(process.env.MONGODB_DATABASE);
         const collection = db.collection(process.env.MONGODB_USER_COLLECTION as string);

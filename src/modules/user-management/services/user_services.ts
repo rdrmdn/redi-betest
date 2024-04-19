@@ -37,6 +37,16 @@ export class UserService {
         return populateCoreUserDTO(user);
     }
 
+    public async findByAccountNumber(accountNumber: string) {
+        const user = await this._userRepo.findByAccountNumber(accountNumber);
+        return user ? populateCoreUserDTO(user) : undefined;
+    }
+
+    public async findByIdentityNumber(identityNUmber: string) {
+        const user = await this._userRepo.findByIdentityNumber(identityNUmber);
+        return user ? populateCoreUserDTO(user) : undefined;
+    }
+
     public async insert(payload: CoreUserDTO) {
         const user = new User({
             id: ksuidSync(),

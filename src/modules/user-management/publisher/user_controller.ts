@@ -36,6 +36,46 @@ export class UserController {
     }
   }
 
+  @Get("by-account-number/:accountNumber")
+  public async findByAccountNumber(req: Request, res: Response, next: NextFunction) {
+    const accountNumber = req.params.accountNumber ;
+
+    try {
+        const user = await this._userService.findByAccountNumber(accountNumber);
+
+        res.status(200);
+        res.json({
+            status: "SUCCESS",
+            message: "SUCCESS",  
+            data: user,
+        });
+
+        return res;
+    } catch (error: unknown) {
+      return next(error as Error);
+    }
+  }
+
+  @Get("by-identity-number/:identityNumber")
+  public async findByIdentityNumber(req: Request, res: Response, next: NextFunction) {
+    const identityNumber = req.params.identityNumber ;
+
+    try {
+        const user = await this._userService.findByIdentityNumber(identityNumber);
+
+        res.status(200);
+        res.json({
+            status: "SUCCESS",
+            message: "SUCCESS",  
+            data: user,
+        });
+
+        return res;
+    } catch (error: unknown) {
+      return next(error as Error);
+    }
+  }
+
   @Get(":userId")
   public async findOne(req: Request, res: Response, next: NextFunction) {
     const userId = req.params.userId ;

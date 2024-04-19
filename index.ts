@@ -12,6 +12,10 @@ import { AuthController } from "./src/modules/auth/publisher/auth_controller";
 import { errorHandler } from "./src/middleware";
 import { RedisClient, RedisConnection } from "./src/utils/redis_connection";
 
+import SwaggerUI from "swagger-ui-express";
+
+import SwaggerDocument from "./swagger";
+
 class AppServer extends Server {
     private _mongoClient: MongoClient;
     private _redisClient: RedisClient;
@@ -24,6 +28,9 @@ class AppServer extends Server {
 
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
+
+        this.app.use("/api-docs", SwaggerUI.serve);
+        this.app.get("/api-docs", SwaggerUI.setup(SwaggerDocument));
 
         this.app.get('/test-reports', function(req, res) {
             res.sendFile(path.join(__dirname, '../test-nice-report/main.html'));
