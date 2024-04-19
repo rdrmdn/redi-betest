@@ -5,12 +5,17 @@ import { CoreUserDTO, populateCoreUserDTO } from "../core/core_user_dto";
 import { ksuidSync } from "../../../utils/identifier";
 import { User } from "../core/user";
 import { NotFoundError } from "../../../utils/errors";
+import { RedisClient } from "../../../utils/redis_connection";
+import { IUserCacheRepository } from "../repositories/iuser_cache_repository";
+import { UserCacheRepositoryRedis } from "../repositories/user_cache_repository_redis";
 
 export class UserService {
     private _userRepo: IUserRepository;
+    private _userCacheRepo: IUserCacheRepository;
 
-    constructor(mongoClient: MongoClient) {
+    constructor(mongoClient: MongoClient, redisClient: RedisClient) {
         this._userRepo = new UserRepositoryMongodb(mongoClient);
+        this._userCacheRepo = new UserCacheRepositoryRedis(redisClient);
     }
 
     public async find(): Promise<CoreUserDTO[]> {
@@ -19,8 +24,20 @@ export class UserService {
     }
 
     public async findOne(id: string) {
+        const userCache = await this._userCacheRepo.findOne(id);
+        if (userCache) {
+            return {
+                ...populateCoreUserDTO(userCache),
+                redis: true,
+            };
+        }
+
         const user = await this._userRepo.findOne(id);
-        return user ? populateCoreUserDTO(user) : undefined;
+
+        if (!user) return undefined;
+
+        await this._userCacheRepo.insert(user)
+        return populateCoreUserDTO(user);
     }
 
     public async insert(payload: CoreUserDTO) {
@@ -49,7 +66,15 @@ export class UserService {
         user.updatedAt = new Date();
         
         const userPersitent = await this._userRepo.update(user);
-        return userPersitent ? populateCoreUserDTO(userPersitent) : undefined;
+
+        if (!userPersitent) return undefined;
+
+        const isExist = await this._userCacheRepo.findOne(userPersitent.id);
+        if (!isExist) return populateCoreUserDTO(userPersitent);
+
+        await this._userCacheRepo.update(userPersitent);
+
+        return populateCoreUserDTO(userPersitent);
     }
 
     public async delete(id: string) {

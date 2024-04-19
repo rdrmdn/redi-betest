@@ -1,6 +1,10 @@
 import { MongoClient } from "mongodb";
 
-export function MongoDBConnection(): MongoClient {
+export async function MongoDBConnection(): Promise<MongoClient> {
   const uri = process.env.MONGODB_HOST || "mongodb://localhost:27017";
-  return new MongoClient(uri);
+  
+  const client = new MongoClient(uri);
+  await client.connect()
+
+  return client;
 }

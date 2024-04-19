@@ -1,18 +1,25 @@
-import { Controller, Delete, Get, Post, Put } from "@overnightjs/core";
+import { ClassMiddleware, Controller, Delete, Get, Middleware, Post, Put } from "@overnightjs/core";
 import { MongoClient } from "mongodb";
 import { UserService } from "../services/user_services";
 import { NextFunction, Request, Response } from "express";
+import { userCreateValidator, userUpdateValidator } from "./user_validator";
+import { authorizationMiddleware } from "../../../middleware";
+import { RedisClient } from "../../../utils/redis_connection";
 
 @Controller("v1/users")
+@ClassMiddleware(authorizationMiddleware)
 export class UserController {
   private _userService: UserService;
 
-  constructor(mongoClient: MongoClient) {
-    this._userService = new UserService(mongoClient);
+  constructor(mongoClient: MongoClient, redisClient: RedisClient) {
+    this._userService = new UserService(
+      mongoClient,
+      redisClient,
+    );
   }
 
   @Get("")
-  public async find(req: Request, res: Response, next: NextFunction) {
+  public async find(_: Request, res: Response, next: NextFunction) {
     try {
         const users = await this._userService.find();
 
@@ -29,7 +36,7 @@ export class UserController {
     }
   }
 
-  @Get("/:userId")
+  @Get(":userId")
   public async findOne(req: Request, res: Response, next: NextFunction) {
     const userId = req.params.userId ;
 
@@ -50,6 +57,7 @@ export class UserController {
   }
 
   @Post("")
+  @Middleware(userCreateValidator())
   public async insert(req: Request, res: Response, next: NextFunction) {
 
     try {
@@ -68,7 +76,8 @@ export class UserController {
     }
   }
 
-  @Put("/:userId")
+  @Put(":userId")
+  @Middleware(userUpdateValidator())
   public async update(req: Request, res: Response, next: NextFunction) {
 
     try {
@@ -88,7 +97,7 @@ export class UserController {
     }
   }
 
-  @Delete("/:userId")
+  @Delete(":userId")
   public async delete(req: Request, res: Response, next: NextFunction) {
 
     try {
