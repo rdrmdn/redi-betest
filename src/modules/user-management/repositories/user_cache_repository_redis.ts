@@ -44,4 +44,10 @@ export class UserCacheRepositoryRedis implements IUserCacheRepository {
 
         return user;
     }
+
+    public async delete(user: User): Promise<User | undefined> {
+        await this._client.del(this.key(user.id));
+
+        return user;
+    }
 }

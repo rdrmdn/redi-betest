@@ -83,6 +83,10 @@ export class UserService {
         if (!user) throw new NotFoundError('User not found');
         
         const userPersitent = await this._userRepo.delete(user);
-        return userPersitent ? populateCoreUserDTO(userPersitent) : undefined;
+        if (!userPersitent) return undefined;
+
+        await this._userCacheRepo.delete(user)
+
+        return populateCoreUserDTO(userPersitent);
     }
 }
