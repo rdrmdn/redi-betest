@@ -35,7 +35,7 @@
 
 - `npm run start:dev` - Run development mode
 - `npm run build` - Build the application for production
-- `npm run start` - Run production mode (require `yarn build` first)
+- `npm run start` - Run production mode (require `npm run build` first)
 - `npm run migrate` - Check & Create indexes MongoDB.
 - `npm run test` - Run unit test.
 
